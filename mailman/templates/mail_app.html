@@ -1,0 +1,74 @@
+{% extends 'mail_base.html' %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<link href="{{ STATIC_URL }}js/tablesorter/theme.default.min.css" rel="stylesheet">
+<script type="text/javascript" src="{{ STATIC_URL }}js/tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/tablesorter/jquery.tablesorter.widgets.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('table').tablesorter({
+      widgets        : ['saveSort'],
+      usNumberFormat : true,
+      sortReset      : true,
+      sortRestart    : true,
+      headers: { 2: { sorter: false}, 5: {sorter: false}, 6: {sorter: false} }
+    });
+  });
+</script>
+<div class="row-fluid">
+    <div class="span2">
+       {% include 'sidebar.html' %}
+    </div>
+    <div class="span10">
+      <h2>All campaigns</h2><br/>
+      <div style="clear:both;">
+        <a href="{{ STATIC_URL }}create?i=<?php echo get_app_info('app' %}" class="btn"><i class="icon-plus-sign"></i> Create and send new campaign</a>
+        <a href="#rss-modal" class="btn campaigns-rss-btn" style="float:right" title="Campaigns RSS feed" data-toggle="modal"><i class="icon icon-rss"></i></a>
+        <div id="rss-modal" class="modal hide fade">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h3>Campaigns RSS feed</h3>
+            </div>
+            <div class="modal-body">
+        <p>The following is the link to your campaigns RSS feed. This RSS feed displays an archive of the last 100 campaigns previously sent.</p>
+        <p class="well" id="feed-url">{{ STATIC_URL }}campaigns-rss?a=<?php echo get_app_data('app_key' %}&i=<?php echo get_app_info('app' %}</p>
+        <p><strong>Some ways to use your RSS feed</strong></p>
+        <ul>
+          <li>Integrate your campaigns feed with your website or application anyway you like</li>
+          <li>Display an archive of your past campaigns on your website or application</li>
+          <li>Let your audience subscribe to your RSS feed so they'll get notified whenever you send a campaign. Good for users who prefers RSS over email (or even both</li>
+          <li>Subscribe to your client's RSS feed (if you give access to your clients) to get notified when they send a new campaign</li>
+        </ul>
+        <script type="text/javascript">
+          $(document).ready(function() {
+            $("#feed-url").click(function(){
+              $(this).selectText();
+            });
+          });
+        </script>
+            </div>
+            <div class="modal-footer">
+              <a href="#" class="btn btn-inverse" data-dismiss="modal"><i class="icon icon-ok-sign"></i> Okay</a>
+            </div>
+          </div>
+      </div>
+      <br/>
+      <table class="table table-striped responsive">
+      <thead>
+        <tr>
+          <th>Campaign</th>
+          <th>Recipients</th>
+          <th>Sent</th>
+          <th>Unique Opens</th>
+          <th>Unique Clicks</th>
+          <th>Duplicate</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+
+{% endblock %}

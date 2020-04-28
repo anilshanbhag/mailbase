@@ -1,0 +1,231 @@
+{% extends 'mail_base.html' %}
+
+{% block content %}
+<script src="{{ STATIC_URL }}/js/ckeditor/ckeditor.js?7"></script>
+<script src="{{ STATIC_URL }}/js/create/editor.js?8"></script>
+
+<!-- Validation -->
+<script type="text/javascript" src="{{ STATIC_URL }}/js/validate.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#edit-form").validate({
+      rules: {
+        subject: {
+          required: true
+        },
+        from_name: {
+          required: true
+        },
+        from_email: {
+          required: true,
+          email: true
+        },
+        reply_to: {
+          required: true,
+          email: true
+        },
+        html: {
+          required: true
+        }
+      },
+      messages: {
+        subject: "The subject of your email is required",
+        from_name: "\'From name\' is required",
+        from_email: "A valid \'From email\' is required",
+        reply_to: "A valid \'Reply to\' email is required",
+        html: "Your HTML code is required"
+      }
+    });
+  });
+</script>
+
+<div class="row-fluid">
+    <div class="span2">
+       {% include 'sidebar.html' %}
+    </div> 
+    <div class="span10">
+      <div class="row-fluid">
+        <h2>Create new campaign</h2><br/>
+      </div>
+      <div class="row-fluid">
+        <form action="/mailman/save-campaign/" method="POST" accept-charset="utf-8" class="form-vertical" id="edit-form" enctype="multipart/form-data">
+          <div class="span3">
+            <div id="campaign-title-field" style="display:none;">
+              <label class="control-label" for="campaign_title">Campaign title</label>
+              <div class="control-group">
+                <div class="controls">
+                      <input type="text" class="input-xlarge" id="campaign_title" name="campaign_title" placeholder="Title of this campaign">
+                    </div>
+                </div>
+              </div>
+            <label class="control-label" for="subject">Subject</label>
+            <div class="control-group">
+              <div class="controls">
+                    <input type="text" class="input-xlarge" id="subject" name="subject" placeholder="Subject of this email">
+                  </div>
+              </div>
+              <a href="javascript:void(0);" id="set-campaign-title-btn">Set a title for this campaign</a> <a href="javascript:void(0)" title="This title (instead of the subject line) will be displayed in your campaigns list and reports. You can also set the title later in the campaign report after sending this campaign." class="icon icon-info-sign" id="set-campaign-title-btn-info"></a>
+          <script type="text/javascript">
+            $(document).ready(function() {
+              $("#set-campaign-title-btn").click(function(){
+                  $(this).fadeOut();
+                  $("#set-campaign-title-btn-info").fadeOut();
+                  $("#campaign-title-field").slideDown("fast");
+                  $("#campaign_title").focus();
+              });
+              $("#campaign_title").blur(function(){
+                if($(this).val()=='')
+                {
+                  $("#set-campaign-title-btn").fadeIn();
+                  $("#set-campaign-title-btn-info").fadeIn();
+                    $("#campaign-title-field").slideUp("fast");
+                  }
+              });
+            });
+          </script>
+
+              <label class="control-label" for="from_name" style="clear:both;">From name</label>
+            <div class="control-group">
+              <div class="controls">
+                    <input type="text" class="input-xlarge" id="from_name" name="from_name" placeholder="From name" value="{{ from_name }}">
+                  </div>
+              </div>
+              
+              <label class="control-label" for="from_email">From email</label>
+            <div class="control-group">
+              <div class="controls">
+                    <input type="text" class="input-xlarge" id="from_email" name="from_email" placeholder="From email" value="{{ from_email }}">
+                  </div>
+              </div>
+              
+              <label class="control-label" for="reply_to">Reply to email</label>
+            <div class="control-group">
+              <div class="controls">
+                    <input type="text" class="input-xlarge" id="reply_to" name="reply_to" placeholder="Reply to email" value="{{ reply_to }}">
+                  </div>
+              </div>
+              
+              <label class="control-label" for="plain">Plain text</label>
+                <div class="control-group">
+              <div class="controls">
+                    <textarea class="input-xlarge" id="plain" name="plain" rows="10" placeholder="Plain text of this email"></textarea>
+                  </div>
+              </div>
+              
+              <label class="control-label" for="query_string">Query string</label>
+              <div class="well">
+                <?php echo _("Optionally append a query string to all links in your email newsletter. A good use case is Google Analytics tracking. Don't include '?' in your query string.");?>
+              </div>
+            <div class="control-group">
+              <div class="controls">
+                    <input type="text" class="input-xlarge" id="query_string" name="query_string" placeholder="eg. utm_source=sendy&utm_medium=email&utm_content=email%20newsletter&utm_campaign=email%20newsletter">
+                  </div>
+              </div>
+
+              <label class="control-label" for="attachments">Attachments</label>
+                <div class="control-group">
+              <div class="controls">
+                <input type="file" id="attachments" name="attachments[]" multiple />
+                  </div>
+              </div><br/>
+              
+              <p>
+                Track opens: 
+                <div class="btn-group" data-toggle="buttons-radio">
+              <a href="javascript:void(0)" title="" class="btn" id="opens_tracking_on"><i class="icon icon-ok"></i> Yes</a>
+              <a href="javascript:void(0)" title="" class="btn" id="opens_tracking_off"><i class="icon icon-remove-sign"></i> No</a>
+            </div>
+            
+            <script type="text/javascript">
+              $(document).ready(function() {
+                $("#opens_tracking_on").button('toggle');
+                $("#opens").val("1");
+                
+                $("#opens_tracking_on").click(function(){
+                  $("#opens").val("1");
+                });
+                $("#opens_tracking_off").click(function(){
+                  $("#opens").val("0");
+                });
+              });
+            </script>
+              </p>
+              <br/>
+              <p>
+                Track clicks: 
+                <div class="btn-group" data-toggle="buttons-radio">
+              <a href="javascript:void(0)" title="" class="btn" id="clicks_tracking_on"><i class="icon icon-ok"></i> Yes</a>
+              <a href="javascript:void(0)" title="" class="btn" id="clicks_tracking_off"><i class="icon icon-remove-sign"></i> No</a>
+            </div>
+            
+            <script type="text/javascript">
+              $(document).ready(function() {
+                $("#clicks_tracking_on").button('toggle');
+                $("#clicks").val("1");
+                
+                $("#clicks_tracking_on").click(function(){
+                  $("#clicks").val("1");
+                });
+                $("#clicks_tracking_off").click(function(){
+                  $("#clicks").val("0");
+                });
+              });
+            </script>
+              </p>
+              <input type="hidden" name="opens" id="opens" value="">
+              <input type="hidden" name="clicks" id="clicks" value="">
+              
+              <br/><br/>
+              
+              <a href="javascript:void(0)" id="campaign-save-only-btn" class="btn"><i class="icon-ok icon-white"></i> Save</a>
+              <button type="submit" class="btn btn-inverse"><i class="icon-arrow-right icon-white"></i> <?php echo _('Save & next');?></button>             
+          </div>   
+          <div class="span9">
+            <p>
+              <label class="control-label" for="html">HTML code</label>
+              <div class="btn-group">
+              <button class="btn" id="toggle-wysiwyg">Save and switch to HTML editor</button> 
+              <span class="wysiwyg-note"><?php echo _('Switch to HTML editor if the WYSIWYG editor is causing your newsletter to look weird.');?></span>
+            <script type="text/javascript">
+              $("#toggle-wysiwyg").click(function(e){
+                e.preventDefault();
+                
+                $('<input>').attr({
+                    type: 'hidden',
+                    id: 'wysiwyg',
+                    name: 'wysiwyg',
+                    value: '0',
+                }).appendTo("#edit-form");
+                
+                $('<input>').attr({
+                    type: 'hidden',
+                    id: 'w_clicked',
+                    name: 'w_clicked',
+                    value: '1',
+                }).appendTo("#edit-form");
+                
+                $("#subject").rules("remove");
+                $("#html").rules("remove");
+                if($("#subject").val()=="") $("#subject").val("Untitled");
+                
+                $("#edit-form").submit();
+              });
+            </script>
+            </div>
+            <br/>
+                  <div class="control-group">
+                <div class="controls">
+                      <textarea class="input-xlarge" id="html" name="html" rows="10" placeholder="Email content"></textarea>
+                    </div>
+                </div>
+              <p>Use the following tags in your subject, plain text or HTML code and they'll automatically be formatted when your campaign is sent. For web version and unsubscribe tags, you can style them with inline CSS</p><br/>
+              <div class="row-fluid">
+                <?php include('includes/helpers/personalization.tags.php');?>
+              </div>
+            </p>
+          </div>
+       </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

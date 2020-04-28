@@ -1,0 +1,14 @@
+logs
+cache
+env
+*.pyc
+local_settings.py
+local_settings.pyc
+darkalpha/templates/index.html
+darkalpha/static/dist/
+darkalpha/static/explorer/
+darkalpha/static/django_extensions/
+darkalpha/static/admin/
+app/package-lock.json
+darkalpha/media/
+*.data
